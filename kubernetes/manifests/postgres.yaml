@@ -62,7 +62,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: postgres
-          image: postgres:16
+          image: pgvector/pgvector:pg15
           imagePullPolicy: IfNotPresent
           ports:
             - name: postgres
