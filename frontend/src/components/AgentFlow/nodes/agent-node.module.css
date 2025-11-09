@@ -1,0 +1,37 @@
+/* agent-node.module.css */
+@keyframes pop-in {
+	0% {
+		transform: scale(0.8);
+		opacity: 0;
+	}
+	60% {
+		transform: scale(1.08);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.animatePopIn {
+	animation: pop-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+	will-change: transform, opacity;
+}
+
+/* ゆっくり点滅 (pulse slow) */
+@keyframes pulse-slow {
+	0%,
+	100% {
+		opacity: 1;
+		filter: drop-shadow(0 0 0 rgba(16, 185, 129, 0));
+	}
+	50% {
+		opacity: 0.88;
+		filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.45));
+	}
+}
+
+.animatePulseSlow {
+	animation: pulse-slow 2.4s ease-in-out infinite;
+	will-change: opacity, filter;
+}

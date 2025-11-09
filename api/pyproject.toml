@@ -1,0 +1,29 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "asyncpg>=0.29.0",
+  "fastapi[standard]>=0.116.1",
+  "openai-agents>=0.2.8",
+  "ruff>=0.12.9"
+]
+
+[tool.uv.sources]
+# "src" ディレクトリをパッケージルートにする設定
+your_project_name = { path = "src" }
+
+[tool.ruff]
+line-length = 200
+lint.select = ["I", "E", "F"]
+lint.ignore = ["E402", "F403"]
+exclude = [
+    ".git",
+    ".ruff_cache",
+    ".vscode",
+    ".github",
+    "__init__.py",
+    "/**/migrations/versions/*.py"
+]

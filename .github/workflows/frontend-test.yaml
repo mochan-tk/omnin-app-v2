@@ -1,0 +1,38 @@
+name: Frontend Test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/**"
+  push:
+    branches:
+      - main
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Run check
+        run: npm run check
+        working-directory: ./frontend
+
+      - name: Run Next lint
+        run: npm run lint
+        working-directory: ./frontend
+
+      - name: Run build Test
+        run: npm run build
+        working-directory: ./frontend
