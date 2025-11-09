@@ -32,21 +32,21 @@
       "type": "shell",
       "command": "git checkout main && git pull && git checkout -b ${input:branch}",
       "args": [],
-      "problemMatcher": [],
+      "problemMatcher": []
     },
     {
       "label": "git fetch origin",
       "type": "shell",
       "command": "git fetch origin",
       "args": [],
-      "problemMatcher": [],
+      "problemMatcher": []
     },
     {
       "label": "git commit (変更をコミットしてプッシュできる状態にします)",
       "type": "shell",
       "command": "git add . && git commit -m \"${input:message}\"",
       "args": [],
-      "problemMatcher": [],
+      "problemMatcher": []
     },
     {
       "label": "git push (現在ブランチをプッシュします。未コミットがないか確認すること。)",
@@ -54,12 +54,12 @@
       "command": "git push -u origin HEAD",
       "args": [],
       "problemMatcher": [],
-      "dependsOrder": "sequence",
+      "dependsOrder": "sequence"
     },
     {
       "label": "Format FastAPI (uv)",
       "type": "shell",
-      "command": "uv run ruff check ./ --fix",
+      "command": "uv run ruff check ./ --fix && uv run ruff format ./",
       "options": {
         "cwd": "${workspaceFolder}/api"
       },
@@ -82,6 +82,34 @@
       },
       "problemMatcher": []
     },
+    {
+      "label": "Run Frontend E2E (Playwright)",
+      "type": "shell",
+      "command": "npm run test:e2e -- --reporter=dot",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Notion: タスク作成 (自動採番IDでブランチ作成)",
+      "type": "shell",
+      "command": "bash -lc 'set -euo pipefail; set -a; source ./.env; set +a; ./scripts/notion-task.sh \"${input:taskType}\" \"${input:taskDescription}\" \"${input:branchName}\"'",
+      "problemMatcher": [],
+      "linux": {
+        "command": "bash -lc 'set -euo pipefail; set -a; source ./.env; set +a; ./scripts/notion-task.sh \"${input:taskType}\" \"${input:taskDescription}\" \"${input:branchName}\"'"
+      },
+      "osx": {
+        "command": "bash -lc 'set -euo pipefail; set -a; source ./.env; set +a; ./scripts/notion-task.sh \"${input:taskType}\" \"${input:taskDescription}\" \"${input:branchName}\"'"
+      },
+      "windows": {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/notion-task.ps1 -TaskKind \"${input:taskType}\" -TaskDesc \"${input:taskDescription}\" -BranchName \"${input:branchName}\""
+      }
+    }
   ],
   "inputs": [
     {
@@ -96,14 +124,48 @@
       "description": "ブランチ名を入力してください。",
       "default": ""
     },
+    {
+      "id": "taskType",
+      "type": "pickString",
+      "description": "タスクの種類を選択",
+      "options": [
+        {
+          "value": "バックエンド"
+        },
+        {
+          "value": "フロントエンド"
+        },
+        {
+          "value": "インフラ"
+        },
+        {
+          "value": "AI機能"
+        },
+        {
+          "value": "開発効率化"
+        },
+        {
+          "value": "研究開発"
+        }
+      ],
+      "default": "フロントエンド"
+    },
+    {
+      "id": "taskDescription",
+      "type": "promptString",
+      "description": "タスクの説明（例：既存のエージェントを探してきて、そのエージェントに連携するAPI）"
+    },
+    {
+      "id": "branchName",
+      "type": "promptString",
+      "description": "ブランチ名の後半部分（OMN-番号_の後に付ける名前）",
+      "default": ""
+    }
   ],
   "compounds": [
     {
       "label": "Run All (FastAPI + Frontend)",
-      "dependsOn": [
-        "Start FastAPI (uv)",
-        "Start Frontend (npm)"
-      ],
+      "dependsOn": ["Start FastAPI (uv)", "Start Frontend (npm)"],
       "presentation": {
         "reveal": "always",
         "panel": "shared"
