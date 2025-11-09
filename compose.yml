@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -14,7 +12,7 @@ services:
         NODE_VERSION: "lts/*"
 
     volumes:
-      - .:/workspace:cached  
+      - .:/workspace:cached
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -29,19 +27,55 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: postgres:latest
+    image: pgvector/pgvector:pg15
     restart: unless-stopped
-    # volumes:
-    #   - postgres-data:/var/lib/postgresql/data
-    tmpfs:
-      - /var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: omnappdb
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-main-data:/var/lib/postgresql/data
 
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+  # DBのマイグレーション用サービス
+  migration:
+    build:
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: 3-bullseye
+        NODE_VERSION: "lts/*"
+    volumes:
+      - .:/workspace:cached
+    depends_on:
+      - db
+    network_mode: service:db
+    command: /workspace/api/scripts/migrate.sh
+    restart: "no"
+
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      # n8nの設定データやワークフローデータを永続化するためのボリューム
+      - n8n-data:/home/node/.n8n
+
+  mongo:
+    image: mongo:6
+    container_name: omnicore-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: omnicore
+    volumes:
+      - mongo-data:/data/db
 
 volumes:
-  postgres-data:
+  postgres-main-data:
+  n8n-data:
+  mongo-data:
